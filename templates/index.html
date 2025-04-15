@@ -1,0 +1,103 @@
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bot Detector</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial; background: #f9fafb; padding: 2rem; }
+    .container { max-width: 600px; margin: auto; background: white; padding: 1rem; border-radius: 10px; box-shadow: 0 0 10px #ccc; }
+    input, button { padding: 10px; margin-top: 10px; width: 100%; font-size: 16px; }
+    #result { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🧠 Real-Time Bot Detection</h2>
+    <input type="text" id="messageInput" placeholder="Type or paste your message...">
+    <button onclick="checkMessage()">Analyze</button>
+    <div id="result"></div>
+    <canvas id="speedChart" height="100"></canvas>
+  </div>
+
+  <script>
+    let typingStart = 0, lastKeyTime = 0;
+    let keystrokeDelays = [], typingSpeeds = [], isPasted = false;
+    const chart = new Chart(document.getElementById("speedChart"), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Typing Speed (KPS)',
+          data: [],
+          fill: false,
+          borderColor: 'blue',
+          tension: 0.1
+        }]
+      }
+    });
+
+    const input = document.getElementById("messageInput");
+
+    input.addEventListener("keydown", (e) => {
+      const now = Date.now();
+      if (typingStart === 0) typingStart = now;
+      if (lastKeyTime !== 0) {
+        const delay = now - lastKeyTime;
+        keystrokeDelays.push(delay);
+        const kps = 1000 / delay;
+        typingSpeeds.push(kps);
+        updateChart(kps);
+      }
+      lastKeyTime = now;
+    });
+
+    input.addEventListener("paste", () => {
+      isPasted = true;
+    });
+
+    function updateChart(kps) {
+      const chartData = chart.data;
+      chartData.labels.push("");
+      chartData.datasets[0].data.push(kps);
+      if (chartData.labels.length > 20) {
+        chartData.labels.shift();
+        chartData.datasets[0].data.shift();
+      }
+      chart.update();
+    }
+
+    async function checkMessage() {
+      const message = input.value;
+      const typingDuration = Date.now() - typingStart;
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          message,
+          typingDuration,
+          keystrokeDelays,
+          isPasted
+        })
+      });
+
+      const data = await res.json();
+      document.getElementById("result").innerText = data.result;
+
+      // Reset
+      typingStart = 0;
+      lastKeyTime = 0;
+      keystrokeDelays = [];
+      typingSpeeds = [];
+      isPasted = false;
+      chart.data.labels = [];
+      chart.data.datasets[0].data = [];
+      chart.update();
+    }
+  </script>
+</body>
+</html>
+
+
+
