@@ -24,4 +24,3 @@ cd Bot_Detector_Game
 pip install -r requirements.txt
 python3 app.py
 ```
-Then visit http://127.0.0.1:5000/ in your browser.
