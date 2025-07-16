@@ -24,3 +24,17 @@ cd Bot_Detector_Game
 pip install -r requirements.txt
 python3 app.py
 ```
+* * *
+
+
+### 📄 License
+
+MIT License © 2025 Divya Dharshini
+
+* * *
+
+### 🤝 Contributions
+
+Pull requests are welcome! For major changes, please open an issue first.
+
+* * *
