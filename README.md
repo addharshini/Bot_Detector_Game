@@ -25,8 +25,10 @@ pip install -r requirements.txt
 python3 app.py
 ```
 * * *
+### 🖼️ UI Preview
+<img width="739" height="484" alt="Screenshot 2025-07-16 133755" src="https://github.com/user-attachments/assets/adfbe86f-633c-4d08-baf6-1e5b75c81006" />
 
-
+* * *
 ### 📄 License
 
 MIT License © 2025 Divya Dharshini
